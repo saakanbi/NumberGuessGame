@@ -24,7 +24,7 @@ pipeline {
 
         stage('Deploy') { // Stage 4: Deploy the application
             steps {
-                sh 'cp target/*.war /home/ec2-user/NumberGuessGame/target' // Replace with your deployment command
+                echo 'Deploying'// Replace with your deployment command
             }
         }
     }
