@@ -46,10 +46,7 @@ pipeline {
             echo 'Build or Deployment failed'
         }
 
-        always {
-            // Ensure the path is correct for your test result files
-            junit '**/target/surefire-reports/*.xml'  // Update this path if necessary
-            archiveArtifacts artifacts: 'target/*.war', allowEmptyArchive: true
+      
         }
     }
 }
