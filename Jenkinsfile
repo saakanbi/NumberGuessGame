@@ -28,7 +28,7 @@ pipeline {
         stage('Build') {
             steps {
                 // Ensure the steps are executed inside a node block to provide necessary workspace context
-                node {
+                node('') {
                     echo 'Building the project...'
                     // Cache Maven dependencies to speed up subsequent builds
                     sh "'${MAVEN_HOME}/bin/mvn' clean install -DskipTests"
@@ -38,7 +38,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                node {
+                node('') {
                     echo 'Running tests...'
                     // Run tests only after build is successful
                     sh "'${MAVEN_HOME}/bin/mvn' test"
@@ -48,7 +48,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                node {
+                node('') {
                     echo 'Deploying Application...'
                     // Place deployment scripts here, e.g., copying files or running deployment scripts
                     // sh './deploy.sh'  // Uncomment and modify if needed
@@ -60,7 +60,7 @@ pipeline {
     post {
         success {
             // Archive the WAR file as an artifact after the build completes
-            node {
+            node('') {
                 archiveArtifacts artifacts: "${BUILD_DIR}/*.war", allowEmptyArchive: true
             }
             echo '✅ Build and Deployment Successful!'
@@ -68,7 +68,7 @@ pipeline {
         }
 
         failure {
-            node {
+            node('') {
                 echo '❌ Build Failed! Please check the logs for issues.'
             }
             // Send notifications to inform stakeholders about the failure (could be via email, Slack, etc.)
@@ -76,7 +76,7 @@ pipeline {
         }
 
         always {
-            node {
+            node('') {
                 // Always run, regardless of success or failure
                 cleanWs()  // Clean workspace to free up space
                 echo 'Cleanup complete. Workspace cleaned.'
