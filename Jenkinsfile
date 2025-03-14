@@ -2,15 +2,13 @@ pipeline {
     agent any
 
     environment {
-        // Environment variables for easier maintenance
         GIT_REPO_URL = 'https://github.com/saakanbi/NumberGuessGame.git'
-        GIT_BRANCH = 'dev'
-        MAVEN_HOME = tool name: 'Maven', type: 'ToolType'  // Use 'Maven' tool defined in Jenkins
+        GIT_BRANCH = 'main'
+        MAVEN_HOME = tool name: 'Maven', type: 'ToolType'  // Correct reference to Maven tool configured in Jenkins
         BUILD_DIR = 'target'  // The directory where Maven outputs the WAR file
     }
 
     options {
-        // Timeout the entire pipeline after 1 hour
         timeout(time: 1, unit: 'HOURS')
     }
 
@@ -18,7 +16,6 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 script {
-                    // If repo is private, add credentialsId
                     echo 'Checking out code from GitHub repository...'
                     git branch: GIT_BRANCH, url: GIT_REPO_URL
                 }
@@ -27,10 +24,9 @@ pipeline {
 
         stage('Build') {
             steps {
-                // Ensure the steps are executed inside a node block to provide necessary workspace context
-                node('') {
+                node {
                     echo 'Building the project...'
-                    // Cache Maven dependencies to speed up subsequent builds
+                    // Ensure Maven is used to build the project
                     sh "'${MAVEN_HOME}/bin/mvn' clean install -DskipTests"
                 }
             }
@@ -38,7 +34,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                node('') {
+                node {
                     echo 'Running tests...'
                     // Run tests only after build is successful
                     sh "'${MAVEN_HOME}/bin/mvn' test"
@@ -48,9 +44,9 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                node('') {
+                node {
                     echo 'Deploying Application...'
-                    // Place deployment scripts here, e.g., copying files or running deployment scripts
+                    // Place deployment scripts here
                     // sh './deploy.sh'  // Uncomment and modify if needed
                 }
             }
@@ -59,26 +55,21 @@ pipeline {
 
     post {
         success {
-            // Archive the WAR file as an artifact after the build completes
-            node('') {
+            node {
                 archiveArtifacts artifacts: "${BUILD_DIR}/*.war", allowEmptyArchive: true
             }
             echo '✅ Build and Deployment Successful!'
-            // Optional: You could also trigger notifications (e.g., email or Slack) here
         }
 
         failure {
-            node('') {
+            node {
                 echo '❌ Build Failed! Please check the logs for issues.'
             }
-            // Send notifications to inform stakeholders about the failure (could be via email, Slack, etc.)
-            // notifyFailure()
         }
 
         always {
-            node('') {
-                // Always run, regardless of success or failure
-                cleanWs()  // Clean workspace to free up space
+            node {
+                cleanWs()
                 echo 'Cleanup complete. Workspace cleaned.'
             }
         }
