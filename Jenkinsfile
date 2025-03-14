@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Environment variables for easier maintenance
         GIT_REPO_URL = 'https://github.com/saakanbi/NumberGuessGame.git'
-        GIT_BRANCH = 'dev'
+        GIT_BRANCH = 'main'
         MAVEN_HOME = tool name: 'M3', type: 'ToolType'  // Assuming Maven tool is installed in Jenkins
         BUILD_DIR = 'target'  // The directory where Maven outputs the WAR file
     }
